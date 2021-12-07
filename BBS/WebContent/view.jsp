@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import = "java.io.PrintWriter" %>
+<%@ page import = "bbs.Bbs" %>
+<%@ page import = "bbs.BbsDAO" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,7 +13,7 @@
 <link rel = "stylesheet" href="css/custom.css">
   <!-- stylesheet의 값을 적용 할것이고 그것의 값은 css/bootstrap.css라는 파일에 있는 값이다. -->
  
-<title>write.jsp</title>
+<title>view.jsp</title>
 </head>
 <body>
    <%
@@ -20,6 +22,21 @@
    		if(session.getAttribute("userID") != null){
    			userID=(String)session.getAttribute("userID");
    		}
+   		int bbsID = 0;
+   		if(request.getParameter("bbsID")!=null){
+   			bbsID = Integer.parseInt(request.getParameter("bbsID"));
+   		}
+   		
+   		if (bbsID == 0){
+   		   PrintWriter script = response.getWriter();
+ 		   script.println("<script>");
+ 		   script.println("alert('유효하지 않은 글입니다.')");
+ 		   script.println("location.href = 'bbs.jsp'");
+ 		   script.println("</script>");  
+   		}
+   		Bbs bbs = new BbsDAO().getBbs(bbsID);
+   		// Bbs (DTO)는 DAO에서 데이터 베이스로 부터 가지고온 값들을 get할 수 있는 상태이므로 
+   		// Bbs 탑입으로 선언한 인스턴스에 new BbsDAO().getBbs(bbsID); 로 쓸수 있다!!
    %>
 	<nav class= "navbar navbar-default">
 		<div class = "navbar-header">
@@ -74,25 +91,43 @@
 		</div>
 		</nav>
 		<div class = "container">
-			<div class= "row">
-			   <form method="post" action = "writeAction.jsp">
+			<div class= "row">			   
 			   	<table class ="table table-striped" style ="text_align: center; border: 1px solid #dddddd">
 					<thead>
 						<tr>
-							<th colspan ="2"style ="background-color:#eeeeee; text-align: center;">게시판 글쓰기 서식</th>
+							<th colspan ="3"style ="background-color:#eeeeee; text-align: center;">게시판 글 보기</th>
 						</tr>
 					</thead>
 					<tbody style = "text-align: center;">
 						<tr>
-							<td><input type="text" class="form-control" placeholder="글 제목" name="bbsTitle" maxlength ="50"></td>
+							<td style="width: 20%;">글 제목</td>	
+							<td colspan ="2"><%= bbs.getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>") %></td>
 						</tr>
 						<tr>
-							<td><textarea class="form-control" placeholder="글 내용" name="bbsContent" maxlength ="2048" style="height: 350px;"></textarea></td>	
+							<td >작성자</td>	
+							<td colspan ="2"><%= bbs.getUserID() %></td>
+						</tr>
+						<tr>
+							<td >작성일자</td>	
+							<td colspan ="2"><%=bbs.getBbsDate().substring(0,11)+bbs.getBbsDate().substring(11,13)+'시'+bbs.getBbsDate().substring(14,16)+'분' %></td>
+						</tr>
+						<tr>
+							<td>내용</td>
+							<td colspan = "2" style=" height: 300px; text-align: left;"><%=bbs.getBbsContent().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>")%></td>
 						</tr>
 					</tbody>
 				</table>
-				<input type="submit" class ="btn btn-primary pull-right" value="글쓰기">
-			   </form>	
+				<a href="bbs.jsp" class = "btn btn-primary">목록</a>
+				<%
+					if(userID!=null && userID.equals(bbs.getUserID())){
+				%>
+						<a href = "update.jsp?bbsID=<%=bbsID%>" class ="btn btn-primary">수정</a>
+						<a onclick = "return confirm('정말로 삭제할 작정이냐? 다시 한번 생각해봐~')" href = "deleteAction.jsp?bbsID=<%=bbsID%>" class ="btn btn-primary">삭제</a>
+				<%
+					}
+				
+				%>
+				<input type="submit" class ="btn btn-primary pull-right" value="글쓰기"> 
 				
 				
 			</div>

@@ -79,7 +79,7 @@ public class BbsDAO {
 	
 	////////////////////////////////////////////글 불러오기////////////////////////////////////////////////////
 	public ArrayList<Bbs> getList(int pageNumber){
-		String SQL = "SELECT * FROM BBS where bbsID<? and bbsAvailable = 1 order by bbsID desc Limit 10";
+		String SQL = "SELECT * FROM BBS where bbsID < ? and bbsAvailable = 1 order by bbsID desc Limit 10";
 		ArrayList<Bbs>list = new ArrayList<Bbs>();
 		try {
 			PreparedStatement pstmt = conn.prepareStatement(SQL);
@@ -99,7 +99,7 @@ public class BbsDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return list;//데이터베이스 오류.
+		return list;
 	}
 	
 	
@@ -119,6 +119,65 @@ public class BbsDAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	
+	
+	
+	public Bbs getBbs(int bbsID) {
+		String SQL = "SELECT * FROM BBS where bbsID=?";
+		
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1, bbsID);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				Bbs bbs = new Bbs();
+				bbs.setBbsID(rs.getInt(1));
+				bbs.setBbsTitle(rs.getString(2));
+				bbs.setUserID(rs.getString(3));
+				bbs.setBbsDate(rs.getString(4));
+				bbs.setBbsContent(rs.getString(5));
+				bbs.setBbsAvailable(rs.getInt(6));
+				return bbs;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+//////////////////////////////////////////게시판 글 수정하고 삭제하기////////////////////////////////////////////////////////////
+	
+	public int update(int bbsID, String bbsTitle,String bbsContent) {
+		String SQL = "update BBS set bbsTitle=?,bbsContent=? where bbsID=?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setString(1,bbsTitle);
+			pstmt.setString(2, bbsContent);
+			pstmt.setInt(3, bbsID);
+			return pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;//데이터베이스 오류.
+	}
+	
+	
+	
+	public int delete(int bbsID) {  //글은 삭제하더라도 관리자가 글의 내용을 확인 할 수 있게 하기 위해 bbsAvailable이라는 값을 0으로 한느 것으로 게시판에 보이지 않게하여 삭제 기능을 구현 하였다. 
+		String SQL = "update BBS set bbsAvailable = 0 where bbsID=?";
+		try {
+			PreparedStatement pstmt = conn.prepareStatement(SQL);
+			pstmt.setInt(1,bbsID);
+			return pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return -1;//데이터베이스 오류.
 	}
 	
 	

@@ -8,7 +8,7 @@
   <!-- 어떤 것으로 접속을 해도 그것에 알맞는 해상도로 보여주라는 명령어 -->
 <link rel = "stylesheet" href="css/bootstrap.css">
   <!-- stylesheet의 값을 적용 할것이고 그것의 값은 css/bootstrap.css라는 파일에 있는 값이다. -->
- 
+ <link rel = "stylesheet" href="css/custom.css">
 <title>login.jsp</title>
 </head>
 <body>
@@ -21,7 +21,7 @@
 				<span class = "icon-bar"></span>
 				<span class = "icon-bar"></span>	
 			</button>
-			<a class="navbar-brand" href="main.jsp">JSP 게시판 웹 사이트</a>
+			<a class="navbar-brand" href="main.jsp">JSP로 간단한 게시판 만들기 ♥</a>
 		</div>
 		<div class ="collapse navbar-collapse" id = "bs-example-navbar-collapse-1">
 			<ul class ="nav navbar-nav">

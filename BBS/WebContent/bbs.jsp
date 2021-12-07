@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import = "java.io.PrintWriter" %>
-<%-- <%@ page import = "bbs.BbsDAO" %>
+<%@ page import = "bbs.BbsDAO" %>
 <%@ page import = "bbs.Bbs" %>
-<%@ page import = "java.util.ArrayList" %> --%>
+<%@ page import = "java.util.ArrayList" %>
 
 
 <!DOCTYPE html>
@@ -14,7 +14,12 @@
   <!-- 어떤 것으로 접속을 해도 그것에 알맞는 해상도로 보여주라는 명령어 -->
 <link rel = "stylesheet" href="css/bootstrap.css">
   <!-- stylesheet의 값을 적용 할것이고 그것의 값은 css/bootstrap.css라는 파일에 있는 값이다. -->
- 
+<link rel = "stylesheet" href="css/custom.css">
+ <style type="text/css">
+ 	a,a:hover{
+ 	color : #0000000;
+ 	text-decoration: none;}
+ </style>
 <title>bbs.jsp</title>
 </head>
 <body>
@@ -38,7 +43,7 @@
 				<span class = "icon-bar"></span>
 				<span class = "icon-bar"></span>	
 			</button>
-			<a class="navbar-brand" href="main.jsp">JSP 게시판 웹 사이트</a>
+			<a class="navbar-brand" href="main.jsp">JSP로 간단한 게시판 만들기 ♥</a>
 		</div>
 		<div class ="collapse navbar-collapse" id = "bs-example-navbar-collapse-1">
 			<ul class ="nav navbar-nav">
@@ -93,16 +98,36 @@
 						</tr>
 					</thead>
 					<tbody style = "text-align: center;">
-						
+						<%
+							BbsDAO bbsDAO = new BbsDAO();
+							ArrayList<Bbs> list = bbsDAO.getList(pageNumber);
+							for(int i = 0; i<list.size(); i++){
+						%>
 							<tr>
-								<td>1</td>
-								<td><a href = "#">글아 잘 작성되거라</a></td>
-								<td>김아무개</td>
-								<td>2017-12-03</td>
+								<td><%=list.get(i).getBbsID() %></td>
+								<td><a href = "view.jsp?bbsID=<%=list.get(i).getBbsID() %>"><%=list.get(i).getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>") %></a></td>
+								<td><%=list.get(i).getUserID() %></td>
+								<td><%=list.get(i).getBbsDate().substring(0,11)+list.get(i).getBbsDate().substring(11,13)+'시'+list.get(i).getBbsDate().substring(14,16)+'분' %></td>
 							</tr>
-						
+							
+						<%
+							}
+						 %>						
 					</tbody>
 				</table>
+				<%
+					if(pageNumber != 1){
+						
+				%>
+					<a href="bbs.jsp?pageNumber=<%=pageNumber -1 %>" class="btn btn-success btn-arraw-left">이전</a>
+				<%		
+					}if(bbsDAO.nextPage(pageNumber+1)){
+				%>
+					<a href="bbs.jsp?pageNumber=<%=pageNumber +1 %>" class="btn btn-success btn-arraw-left">다음</a>
+				<%
+					}
+				%>
+			
 				<a href="write.jsp" class ="btn btn-primary pull-right"> 글쓰기</a>
 			</div>
 		</div>
